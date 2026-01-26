@@ -1,0 +1,240 @@
+# EditorConfig for Unity projects — cross-platform LF, Unity-friendly naming/formatting
+# https://editorconfig.org
+root = true
+
+# ---------------- Global defaults ----------------
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+tab_width = 4
+# Soft wrap guide only (not enforced by compiler)
+max_line_length = 120
+
+# ---------------- C# source files ----------------
+[*.{cs,csx,cake}]
+# Bracing & newlines
+csharp_new_line_before_open_brace = all
+csharp_new_line_between_query_expression_clauses = true
+csharp_preserve_single_line_blocks = false
+csharp_preserve_single_line_statements = false
+
+# Spacing (granular; VS-friendly)
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_call_empty_parameter_list_parentheses = false
+csharp_space_after_comma = true
+csharp_space_around_binary_operators = before_and_after
+
+# Usings
+dotnet_sort_system_directives_first = true
+csharp_using_directive_placement = outside_namespace:silent
+
+# var usage
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_elsewhere = false:suggestion
+
+# Expression-bodied members (conservative defaults)
+csharp_style_expression_bodied_accessors = when_on_single_line:suggestion
+csharp_style_expression_bodied_properties = when_on_single_line:suggestion
+csharp_style_expression_bodied_methods = false:suggestion
+
+# Braces preference (always keep)
+csharp_prefer_braces = true:warning
+
+# Modern style nudges (VS/Roslyn)
+csharp_style_implicit_object_creation_when_type_is_apparent = true:suggestion
+csharp_style_prefer_index_operator = true:suggestion
+csharp_style_prefer_range_operator = true:suggestion
+csharp_style_prefer_simple_default_expression = true:suggestion
+
+# General dotnet styles
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+dotnet_style_prefer_auto_properties = true:suggestion
+dotnet_style_prefer_inferred_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:suggestion
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:suggestion
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+dotnet_style_qualification_for_method = false:suggestion
+dotnet_style_qualification_for_event = false:suggestion
+
+# Indentation fine-tuning
+csharp_indent_labels = one_less_than_current
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+csharp_indent_case_contents_when_block = true
+
+# Namespaces (file-scoped allowed; suggestion only)
+csharp_style_namespace_declarations = file_scoped:suggestion
+
+# ---------------- Naming conventions (Unity-friendly) ----------------
+# Conventions:
+# - PascalCase: types, methods, properties, events, public fields, enum members, namespaces
+# - camelCase: locals and parameters
+# - Prefix non-public instance fields with m_ (e.g., m_speed)
+# - Prefix static (non-const) fields with s_ (e.g., s_instance)
+# - Prefix constants with k_ (e.g., k_MaxLives)
+# - Interfaces start with I (e.g., IInteractable)
+
+# Symbol groups
+dotnet_naming_symbols.types.applicable_kinds = class, struct, enum, delegate
+dotnet_naming_symbols.types.applicable_accessibilities = *
+dotnet_naming_symbols.types.required_modifiers = *
+
+dotnet_naming_symbols.methods.applicable_kinds = method
+dotnet_naming_symbols.properties.applicable_kinds = property
+dotnet_naming_symbols.events.applicable_kinds = event
+
+dotnet_naming_symbols.public_fields.applicable_kinds = field
+dotnet_naming_symbols.public_fields.applicable_accessibilities = public
+
+dotnet_naming_symbols.nonpublic_instance_fields.applicable_kinds = field
+dotnet_naming_symbols.nonpublic_instance_fields.applicable_accessibilities = private, protected, private_protected, protected_internal
+dotnet_naming_symbols.nonpublic_instance_fields.required_modifiers = !static, !const
+
+dotnet_naming_symbols.static_fields.applicable_kinds = field
+dotnet_naming_symbols.static_fields.required_modifiers = static
+
+dotnet_naming_symbols.constants.applicable_kinds = field
+dotnet_naming_symbols.constants.required_modifiers = const
+
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+dotnet_naming_symbols.locals.applicable_kinds = local
+dotnet_naming_symbols.parameters.applicable_kinds = parameter
+dotnet_naming_symbols.enum_members.applicable_kinds = enum_member
+dotnet_naming_symbols.namespaces.applicable_kinds = namespace
+
+# Styles
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+dotnet_naming_style.camel_case.capitalization = camel_case
+dotnet_naming_style.prefix_m_.capitalization = camel_case
+dotnet_naming_style.prefix_m_.required_prefix = m_
+dotnet_naming_style.prefix_s_.capitalization = camel_case
+dotnet_naming_style.prefix_s_.required_prefix = s_
+dotnet_naming_style.prefix_k_.capitalization = pascal_case
+dotnet_naming_style.prefix_k_.required_prefix = k_
+dotnet_naming_style.interface_I.capitalization = pascal_case
+dotnet_naming_style.interface_I.required_prefix = I
+
+# Rules
+dotnet_naming_rule.types_should_be_pascal.symbols = types
+dotnet_naming_rule.types_should_be_pascal.style = pascal_case
+dotnet_naming_rule.types_should_be_pascal.severity = warning
+
+dotnet_naming_rule.methods_should_be_pascal.symbols = methods
+dotnet_naming_rule.methods_should_be_pascal.style = pascal_case
+dotnet_naming_rule.methods_should_be_pascal.severity = warning
+
+dotnet_naming_rule.properties_should_be_pascal.symbols = properties
+dotnet_naming_rule.properties_should_be_pascal.style = pascal_case
+dotnet_naming_rule.properties_should_be_pascal.severity = warning
+
+dotnet_naming_rule.events_should_be_pascal.symbols = events
+dotnet_naming_rule.events_should_be_pascal.style = pascal_case
+dotnet_naming_rule.events_should_be_pascal.severity = warning
+
+dotnet_naming_rule.public_fields_should_be_pascal.symbols = public_fields
+dotnet_naming_rule.public_fields_should_be_pascal.style = pascal_case
+dotnet_naming_rule.public_fields_should_be_pascal.severity = suggestion
+
+dotnet_naming_rule.nonpublic_instance_fields_m_prefix.symbols = nonpublic_instance_fields
+dotnet_naming_rule.nonpublic_instance_fields_m_prefix.style = prefix_m_
+dotnet_naming_rule.nonpublic_instance_fields_m_prefix.severity = warning
+
+dotnet_naming_rule.static_fields_s_prefix.symbols = static_fields
+dotnet_naming_rule.static_fields_s_prefix.style = prefix_s_
+dotnet_naming_rule.static_fields_s_prefix.severity = suggestion
+
+dotnet_naming_rule.constants_k_prefix.symbols = constants
+dotnet_naming_rule.constants_k_prefix.style = prefix_k_
+dotnet_naming_rule.constants_k_prefix.severity = warning
+
+dotnet_naming_rule.interfaces_start_with_I.symbols = interfaces
+dotnet_naming_rule.interfaces_start_with_I.style = interface_I
+dotnet_naming_rule.interfaces_start_with_I.severity = warning
+
+dotnet_naming_rule.locals_camel.symbols = locals
+dotnet_naming_rule.locals_camel.style = camel_case
+dotnet_naming_rule.locals_camel.severity = suggestion
+
+dotnet_naming_rule.parameters_camel.symbols = parameters
+dotnet_naming_rule.parameters_camel.style = camel_case
+dotnet_naming_rule.parameters_camel.severity = suggestion
+
+dotnet_naming_rule.enum_members_pascal.symbols = enum_members
+dotnet_naming_rule.enum_members_pascal.style = pascal_case
+dotnet_naming_rule.enum_members_pascal.severity = warning
+
+dotnet_naming_rule.namespaces_pascal.symbols = namespaces
+dotnet_naming_rule.namespaces_pascal.style = pascal_case
+dotnet_naming_rule.namespaces_pascal.severity = suggestion
+
+# ---------------- XML / solution (keep simple) ----------------
+[*.{csproj,props,targets,xml}]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+
+[*.sln]
+end_of_line = lf
+
+# ---------------- Script EOL overrides (align with .gitattributes) ----------------
+# Windows scripts keep CRLF for compatibility
+[*.{bat,cmd,ps1}]
+end_of_line = crlf
+
+# Unix shell scripts must be LF to execute on macOS/Linux
+[*.sh]
+end_of_line = lf
+
+# ---------------- Markdown ----------------
+[*.md]
+trim_trailing_whitespace = false
+
+#############################################
+# StyleCop.Analyzers – Unity-friendly tuning
+#############################################
+
+# --- Documentation (disable walls of XML by default) ---
+dotnet_diagnostic.SA1600.severity = none    # Elements should be documented
+dotnet_diagnostic.SA1601.severity = none    # Partial elements should be documented
+dotnet_diagnostic.SA1604.severity = none    # Element documentation header
+dotnet_diagnostic.SA1609.severity = none    # Property 'value' documentation
+dotnet_diagnostic.SA1611.severity = none    # Param docs
+dotnet_diagnostic.SA1615.severity = none    # Return value docs
+
+# --- Readability / layout ---
+dotnet_diagnostic.SA1500.severity = warning # Braces for multi-line statements on new line (matches Allman)
+dotnet_diagnostic.SA1501.severity = warning # Statement must not be on a single line
+dotnet_diagnostic.SA1502.severity = suggestion # Elements must be separated by blank line (relaxed)
+dotnet_diagnostic.SA1503.severity = warning # Braces must not be omitted
+dotnet_diagnostic.SA1516.severity = suggestion # Elements separated by blank line
+
+# --- Using directives & ordering (we already sort System first) ---
+dotnet_diagnostic.SA1200.severity = suggestion # Using directives placement
+dotnet_diagnostic.SA1208.severity = suggestion # System directives first
+dotnet_diagnostic.SA1210.severity = suggestion # Using directives ordered alphabetically
+
+# --- Naming (we use the .editorconfig naming rules) ---
+dotnet_diagnostic.SA1306.severity = none    # Field names should begin with lower-case letter (our m_/s_/k_ rules kick in)
+dotnet_diagnostic.SA1309.severity = none    # Field names should not begin with underscore (we intentionally use m_, s_)
+dotnet_diagnostic.SA1310.severity = none    # Field names should not contain underscore (intentional for prefixes)
+dotnet_diagnostic.SA1300.severity = warning # Element should begin with upper-case (types/methods/properties)
+
+# --- Spacing/punctuation (keep consistent with your spacing block) ---
+dotnet_diagnostic.SA1001.severity = warning # Commas should be spaced correctly
+dotnet_diagnostic.SA1005.severity = warning # Single line comments must begin with space
+dotnet_diagnostic.SA1028.severity = suggestion # Tabs must not be used (we use spaces)
+
+# --- File headers (skip) ---
+dotnet_diagnostic.SA1633.severity = none    # File should have header
