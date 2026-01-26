@@ -1,0 +1,29 @@
+fileFormatVersion: 2
+guid: d4d11c5d3356fb642a984328a927712e
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Hardpixel
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 342952
+  packageName: "Upgrade Tree PRO \u2013 Skill, Tech & Perk Trees for Idle/Incremental/Roguelike
+    Games"
+  packageVersion: 1.0.0
+  assetPath: Assets/HolenderGames/UpgradesTreePro/Fonts/Hardpixel-nn51.otf
+  uploadId: 847132
