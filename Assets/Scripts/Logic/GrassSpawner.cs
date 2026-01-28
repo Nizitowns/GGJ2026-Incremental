@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using HolenderGames.StatSystem;
 using UnityEngine;
-
+using HolenderGames.Currencies;
 public class GrassSpawner : MonoBehaviour
 {
     [Header("Prefab / Layers")]
@@ -154,6 +154,7 @@ public class GrassSpawner : MonoBehaviour
     private void OnGrassPatchCut(GrassPatch patch)
     {
         NotifyGrassCut();
+        CurrencyManager.Instance.AddCurrency(CurrencyType.Gold, 1);
         Despawn(patch);
         alive.Remove(patch);
     }
