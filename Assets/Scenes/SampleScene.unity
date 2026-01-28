@@ -4815,6 +4815,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CanvasUpgrades
       objectReference: {fileID: 0}
+    - target: {fileID: 4914211724865130637, guid: c9e7a6cbc7943464ca80f9196765e09d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5066456346088547061, guid: c9e7a6cbc7943464ca80f9196765e09d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
