@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f896120182dd854896c2ab7adbc9c27, type: 3}
-  m_Name: UpgradeData_Session_Time
+  m_Name: UpgradeData_Session_Time_1
   m_EditorClassIdentifier: Assembly-CSharp::HolenderGames.UpgradesTreePro.UpgradeData
   UpgradeName: Session Time
   Icon: {fileID: -1443889011651946179, guid: 79d73c8dc176eaa45a64e80accbe7654, type: 3}
@@ -20,10 +20,10 @@ MonoBehaviour:
   ParentUpgrade: {fileID: 0}
   LevelsData:
   - Description: Increase session time
-    Cost: 10
+    Cost: 1
     Effects:
     - statType: 9
       operation: 0
-      value: 5
+      value: 2
       showOnTooltip: 0
       tooltipLabel: 

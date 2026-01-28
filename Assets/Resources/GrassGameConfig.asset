@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GrassGameConfig
   m_EditorClassIdentifier: Assembly-CSharp::GrassGameConfig
   sessionTimeSecondsStat: 9
-  breakerRadiusStat: 11
+  breakerRadiusStat: 10
   breakerDamageStat: 11
   breakerTickIntervalStat: 12
   breakerCritChanceStat: 13

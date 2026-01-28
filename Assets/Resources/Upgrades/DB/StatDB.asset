@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HolenderGames.StatSystem.StatDB
   BaseStats:
   - type: 10
-    baseValue: 10
+    baseValue: 1
   - type: 11
     baseValue: 1
   - type: 12
