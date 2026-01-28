@@ -53,6 +53,8 @@ public class GameSessionController : MonoBehaviour
 
     public void StartSession()
     {
+        Debug.Log("StartSession sessionTime=" +
+          GameData.Instance.GetStat(config.SessionTimeSecondsStat));
         float sessionSeconds = 10f;
 
         if (config != null && GameData.Instance != null)
@@ -94,6 +96,15 @@ public class GameSessionController : MonoBehaviour
         spawner?.Stop();
 
         SessionEnded?.Invoke();
+    }
+    public void RestartSession()
+    {
+        // stop anything still running
+        cutter?.Stop();
+        spawner?.Stop();
+
+        // IMPORTANT: read latest stats here (not cached)
+        StartSession();
     }
 
     public GrassGameConfig Config => config;

@@ -12,20 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12db4bdeb7d68f24c847e07c3793f761, type: 3}
   m_Name: GrassGameConfig
   m_EditorClassIdentifier: Assembly-CSharp::GrassGameConfig
-  sessionTimeSecondsStat: 10
+  sessionTimeSecondsStat: 9
   breakerRadiusStat: 11
-  breakerDamageStat: 12
-  breakerTickIntervalStat: 13
-  breakerCritChanceStat: 14
-  breakerCritBonusMultiplierStat: 15
-  startingGrassHPStat: 16
-  startingGrassPatchCountStat: 17
-  maxGrassPatchesStat: 18
-  baseRespawnRatePerSecondStat: 19
-  respawnRatePerCutPerSecondStat: 20
-  baseTargetPopulationStat: 21
-  targetPopulationPerCutPerSecondStat: 22
-  pressureWindowSecondsStat: 23
+  breakerDamageStat: 11
+  breakerTickIntervalStat: 12
+  breakerCritChanceStat: 13
+  breakerCritBonusMultiplierStat: 14
+  startingGrassHPStat: 15
+  startingGrassPatchCountStat: 16
+  maxGrassPatchesStat: 17
+  baseRespawnRatePerSecondStat: 18
+  respawnRatePerCutPerSecondStat: 19
+  baseTargetPopulationStat: 20
+  targetPopulationPerCutPerSecondStat: 21
+  pressureWindowSecondsStat: 22
   fieldCenter: {x: 0, y: 0, z: 0}
   fieldSize: {x: 20, y: 20}
   spawnY: 0

@@ -19,7 +19,7 @@ MonoBehaviour:
   UnlockAtParentLevel: 1
   ParentUpgrade: {fileID: 0}
   LevelsData:
-  - Description: 
+  - Description: Increase session time
     Cost: 10
     Effects:
     - statType: 9
