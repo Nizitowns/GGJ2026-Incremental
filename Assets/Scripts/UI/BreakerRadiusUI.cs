@@ -30,6 +30,52 @@ public class BreakerRadiusUI : MonoBehaviour
         if (!canvas)
             canvas = GetComponentInParent<Canvas>();
         canvasRect = canvas.transform as RectTransform;
+        if (circleRect)
+            baseScale = circleRect.localScale;
+    }
+    void OnEnable()
+    {
+        if (cutter != null)
+            cutter.SnipTick += HandleSnipTick;
+    }
+
+    void OnDisable()
+    {
+        if (cutter != null)
+            cutter.SnipTick -= HandleSnipTick;
+    }
+
+    void HandleSnipTick()
+    {
+        if (!circleRect)
+            return;
+        if (pulseCo != null)
+            StopCoroutine(pulseCo);
+        pulseCo = StartCoroutine(Pulse());
+    }
+    System.Collections.IEnumerator Pulse()
+    {
+        Vector3 start = baseScale;
+        Vector3 peak = baseScale * pulseScale;
+
+        // in
+        for (float t = 0f; t < pulseInSeconds; t += Time.unscaledDeltaTime)
+        {
+            float a = t / pulseInSeconds;
+            circleRect.localScale = Vector3.Lerp(start, peak, a);
+            yield return null;
+        }
+        circleRect.localScale = peak;
+
+        // out
+        for (float t = 0f; t < pulseOutSeconds; t += Time.unscaledDeltaTime)
+        {
+            float a = t / pulseOutSeconds;
+            circleRect.localScale = Vector3.Lerp(peak, start, a);
+            yield return null;
+        }
+        circleRect.localScale = start;
+        pulseCo = null;
     }
 
     void Update()

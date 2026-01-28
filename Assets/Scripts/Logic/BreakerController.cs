@@ -1,9 +1,11 @@
+using HolenderGames.StatSystem;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BreakerController : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private LayerMask playfieldMask = ~0; // set to Playfield layer in inspector
+    [SerializeField] private LayerMask playfieldMask = ~0;
 
     private GrassGameConfig config;
 
@@ -11,7 +13,17 @@ public class BreakerController : MonoBehaviour
     {
         get; private set;
     }
-    public float Radius => config ? config.breakerRadius : 1f;
+
+    // Radius now comes from stats (not config float)
+    public float Radius
+    {
+        get
+        {
+            if (config == null || GameData.Instance == null)
+                return 1f;
+            return GameData.Instance.GetStat(config.BreakerRadiusStat);
+        }
+    }
 
     public void SetConfig(GrassGameConfig cfg) => config = cfg;
 
@@ -30,29 +42,27 @@ public class BreakerController : MonoBehaviour
     {
         if (!mainCamera)
             return;
+        if (Mouse.current == null)
+            return;
 
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        Vector2 mouseScreen = Mouse.current.position.ReadValue();
+        Ray ray = mainCamera.ScreenPointToRay(mouseScreen);
 
-        // Prefer a collider-based playfield for accuracy.
         if (Physics.Raycast(ray, out RaycastHit hit, 500f, playfieldMask, QueryTriggerInteraction.Ignore))
         {
             BreakerWorldPos = hit.point;
             return;
         }
 
-        // Fallback: plane at config.spawnY or y=0
-        float y = config ? config.spawnY : 0f;
+        // Fallback plane at SpawnY (now via getter)
+        float y = (config != null) ? config.SpawnY : 0f;
         Plane plane = new Plane(Vector3.up, new Vector3(0f, y, 0f));
         if (plane.Raycast(ray, out float enter))
-        {
             BreakerWorldPos = ray.GetPoint(enter);
-        }
     }
 
     private void OnDrawGizmosSelected()
     {
-        if (!config)
-            return;
-        Gizmos.DrawWireSphere(BreakerWorldPos, config.breakerRadius);
+        Gizmos.DrawWireSphere(BreakerWorldPos, Radius);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using HolenderGames.StatSystem;
 using UnityEngine;
 
 public class GameSessionController : MonoBehaviour
@@ -52,7 +53,12 @@ public class GameSessionController : MonoBehaviour
 
     public void StartSession()
     {
-        TimeRemaining = config ? config.sessionTimeSeconds : 10f;
+        float sessionSeconds = 10f;
+
+        if (config != null && GameData.Instance != null)
+            sessionSeconds = GameData.Instance.GetStat(config.SessionTimeSecondsStat);
+
+        TimeRemaining = sessionSeconds;
         State = SessionState.Running;
 
         spawner?.ResetSpawner();
@@ -62,6 +68,7 @@ public class GameSessionController : MonoBehaviour
 
         SessionStarted?.Invoke();
     }
+
 
     private void Update()
     {

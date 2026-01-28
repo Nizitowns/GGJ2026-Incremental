@@ -12,13 +12,25 @@ namespace HolenderGames.StatSystem
         Wizard_Shields,
         Wizard_Health,
         Magician_Damage,
-        Magician_AttackSpeed,
+     
         Magician_Shields,
         Magician_Health,
         UnlockMagician,
         UnlockQuestBoard,
-        Test123
-
+        SessionTime,
+        BreakerRadius,
+        BreakerDamage,
+        BreakerTickInterval,
+        BreackerCritChance,
+        BreakerCritBonusMultiplier,
+        GrassStartingHP,
+        GrassStartingPatchCount,
+        GrassMaxPatchCount,
+        SpawnerBaseRespawnRate,
+        SpawnerRespawnRatePerCut,
+        SpawnerBaseTargetPopulation,
+        SpawnerTargetPopulationPerCut,
+        SpawnerPressureWindowSeconds
     }
 
 }

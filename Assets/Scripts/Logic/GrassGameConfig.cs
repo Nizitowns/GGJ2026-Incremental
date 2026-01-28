@@ -1,48 +1,63 @@
+using HolenderGames.StatSystem;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Grass Game/Config", fileName = "GrassGameConfig")]
 public class GrassGameConfig : ScriptableObject
 {
-    [Header("Session")]
-    [Min(0.1f)] public float sessionTimeSeconds = 10f;
+    [Header("Stat Keys (UpgradeTree PRO / StatsSystem)")]
+    [SerializeField] private StatType sessionTimeSecondsStat;
 
-    [Header("Breaker")]
-    [Min(0.01f)] public float breakerRadius = 1.25f;
-    [Min(0f)] public float breakerDamage = 1f;
-    [Min(0.01f)] public float breakerTickInterval = 0.5f;
+    [SerializeField] private StatType breakerRadiusStat;
+    [SerializeField] private StatType breakerDamageStat;
+    [SerializeField] private StatType breakerTickIntervalStat;
+    [SerializeField] private StatType breakerCritChanceStat;
+    [SerializeField] private StatType breakerCritBonusMultiplierStat;
 
-    [Range(0f, 1f)] public float breakerCritChance = 0.1f;
-    [Min(1f)] public float breakerCritBonusMultiplier = 2f;
+    [SerializeField] private StatType startingGrassHPStat;
+    [SerializeField] private StatType startingGrassPatchCountStat;
+    [SerializeField] private StatType maxGrassPatchesStat;
 
-    [Header("Grass")]
-    [Min(0.01f)] public float startingGrassHP = 3f; // ~3 snips if breakerDamage=1 and no crit
-    [Min(0)] public int startingGrassPatchCount = 20;
-    [Min(0)] public int maxGrassPatches = 200;
+    [SerializeField] private StatType baseRespawnRatePerSecondStat;
+    [SerializeField] private StatType respawnRatePerCutPerSecondStat;
+    [SerializeField] private StatType baseTargetPopulationStat;
+    [SerializeField] private StatType targetPopulationPerCutPerSecondStat;
+    [SerializeField] private StatType pressureWindowSecondsStat;
 
-    [Header("Spawning Area (World Space)")]
-    public Vector3 fieldCenter = Vector3.zero;
-    public Vector2 fieldSize = new Vector2(20f, 20f); // XZ size
-    [Min(0f)] public float spawnY = 0f;
+    [Header("World / Spawning (Not upgraded usually)")]
+    [SerializeField] private Vector3 fieldCenter = Vector3.zero;
+    [SerializeField] private Vector2 fieldSize = new(20f, 20f);
+    [SerializeField, Min(0f)] private float spawnY = 0f;
 
-    [Header("Spawn Collision / Spacing")]
-    [Min(0f)] public float spawnAvoidRadius = 0.5f;
-    [Min(1)] public int spawnAttemptsPerPatch = 12;
+    [Header("Spawn Collision / Spacing (Usually not upgraded)")]
+    [SerializeField, Min(0f)] private float m_spawnAvoidRadius = 0.5f;
+    [SerializeField, Min(1)] private int m_spawnAttemptsPerPatch = 12;
 
-    [Header("Respawn Pressure Tuning")]
-    [Tooltip("Baseline spawns per second while session runs.")]
-    [Min(0f)] public float baseRespawnRatePerSecond = 1.5f;
+    // Expose StatType keys via read-only properties (so other scripts can’t change them at runtime)
+    public StatType SessionTimeSecondsStat => sessionTimeSecondsStat;
 
-    [Tooltip("Additional spawns/sec per (cuts per second).")]
-    [Min(0f)] public float respawnRatePerCutPerSecond = 0.75f;
+    public StatType BreakerRadiusStat => breakerRadiusStat;
+    public StatType BreakerDamageStat => breakerDamageStat;
+    public StatType BreakerTickIntervalStat => breakerTickIntervalStat;
+    public StatType BreakerCritChanceStat => breakerCritChanceStat;
+    public StatType BreakerCritBonusMultiplierStat => breakerCritBonusMultiplierStat;
 
-    [Tooltip("Baseline target population the spawner tries to maintain.")]
-    [Min(0)] public int baseTargetPopulation = 35;
+    public StatType StartingGrassHPStat => startingGrassHPStat;
+    public StatType StartingGrassPatchCountStat => startingGrassPatchCountStat;
+    public StatType MaxGrassPatchesStat => maxGrassPatchesStat;
 
-    [Tooltip("Extra target population per (cuts per second).")]
-    [Min(0f)] public float targetPopulationPerCutPerSecond = 8f;
+    public StatType BaseRespawnRatePerSecondStat => baseRespawnRatePerSecondStat;
+    public StatType RespawnRatePerCutPerSecondStat => respawnRatePerCutPerSecondStat;
+    public StatType BaseTargetPopulationStat => baseTargetPopulationStat;
+    public StatType TargetPopulationPerCutPerSecondStat => targetPopulationPerCutPerSecondStat;
+    public StatType PressureWindowSecondsStat => pressureWindowSecondsStat;
 
-    [Tooltip("Seconds window for measuring cuts/sec.")]
-    [Min(0.1f)] public float pressureWindowSeconds = 3f;
+    // Non-stat config values
+    public Vector3 FieldCenter => fieldCenter;
+    public Vector2 FieldSize => fieldSize;
+    public float SpawnY => spawnY;
+
+    public float SpawnAvoidRadius => m_spawnAvoidRadius;
+    public int SpawnAttemptsPerPatch => m_spawnAttemptsPerPatch;
 
     public Bounds GetFieldBounds()
     {

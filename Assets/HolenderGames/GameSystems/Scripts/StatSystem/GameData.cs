@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace HolenderGames.StatSystem
 {
@@ -44,7 +45,10 @@ namespace HolenderGames.StatSystem
         public float GetStat(StatType statType)
         {
             if (NumericalStats.TryGetValue(statType, out var stat))
+            {
                 return stat.FinalValue;
+            }
+            Console.WriteLine($"[GameData] Missing stat in NumericalStats: {statType}");
             return 0;
         }
 

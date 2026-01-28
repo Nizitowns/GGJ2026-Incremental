@@ -1,25 +1,34 @@
 using System.Collections.Generic;
+using HolenderGames.StatSystem;
 using UnityEngine;
 
 public class GrassSpawner : MonoBehaviour
 {
     [Header("Prefab / Layers")]
     [SerializeField] private GrassPatch grassPrefab;
-    [SerializeField] private LayerMask grassLayerMask; // set to Grass layer
+    [SerializeField] private LayerMask grassLayerMask;
     [SerializeField] private Transform spawnedParent;
 
-    private GrassGameConfig config;
+    [Header("Config (non-stats)")]
+    [SerializeField] private GrassGameConfig config;
 
-    private readonly List<GrassPatch> alive = new List<GrassPatch>(512);
-    private readonly Queue<GrassPatch> pool = new Queue<GrassPatch>(512);
+    [Header("Stat Keys")]
+    [SerializeField] private StatType statStartingGrassHP;
+    [SerializeField] private StatType statStartingGrassPatchCount;
+    [SerializeField] private StatType statMaxGrassPatches;
+
+    [SerializeField] private StatType statBaseRespawnRatePerSecond;
+    [SerializeField] private StatType statRespawnRatePerCutPerSecond;
+    [SerializeField] private StatType statBaseTargetPopulation;
+    [SerializeField] private StatType statTargetPopulationPerCutPerSecond;
+    [SerializeField] private StatType statPressureWindowSeconds;
+
+    private readonly List<GrassPatch> alive = new(512);
+    private readonly Queue<GrassPatch> pool = new(512);
+    private readonly Queue<float> cutTimestamps = new(256);
 
     private bool running;
-    private float spawnBudget; // accumulates spawns over time
-
-    // Pressure measurement
-    private readonly Queue<float> cutTimestamps = new Queue<float>(256);
-
-    public void SetConfig(GrassGameConfig cfg) => config = cfg;
+    private float spawnBudget;
 
     public int AliveCount => alive.Count;
     public LayerMask GrassMask => grassLayerMask;
@@ -27,11 +36,10 @@ public class GrassSpawner : MonoBehaviour
     public void ResetSpawner()
     {
         Stop();
-        // Despawn all alive
+
         for (int i = alive.Count - 1; i >= 0; i--)
-        {
             Despawn(alive[i]);
-        }
+
         alive.Clear();
         cutTimestamps.Clear();
         spawnBudget = 0f;
@@ -41,13 +49,14 @@ public class GrassSpawner : MonoBehaviour
     {
         if (!config || !grassPrefab)
             return;
+
         running = true;
 
-        int count = Mathf.Clamp(config.startingGrassPatchCount, 0, config.maxGrassPatches);
+        int maxPatches = GetMaxGrassPatches();
+        int count = Mathf.Clamp(GetStartingGrassPatchCount(), 0, maxPatches);
+
         for (int i = 0; i < count; i++)
-        {
             TrySpawnOne();
-        }
     }
 
     public void Stop() => running = false;
@@ -56,8 +65,6 @@ public class GrassSpawner : MonoBehaviour
     {
         float now = Time.time;
         cutTimestamps.Enqueue(now);
-
-        // Trim old timestamps beyond pressure window
         TrimCuts(now);
     }
 
@@ -65,60 +72,63 @@ public class GrassSpawner : MonoBehaviour
     {
         if (!running || !config || !grassPrefab)
             return;
+        if (GameData.Instance == null)
+            return;
 
         float now = Time.time;
         TrimCuts(now);
 
         float cps = GetCutsPerSecond(now);
 
-        // Compute dynamic target + respawn rate under "pressure"
+        int maxPatches = GetMaxGrassPatches();
+
         int target = Mathf.Clamp(
-            Mathf.RoundToInt(config.baseTargetPopulation + config.targetPopulationPerCutPerSecond * cps),
+            Mathf.RoundToInt(GetBaseTargetPopulation() + GetTargetPopPerCps() * cps),
             0,
-            config.maxGrassPatches
+            maxPatches
         );
 
-        float respawnRate = config.baseRespawnRatePerSecond + config.respawnRatePerCutPerSecond * cps;
+        float respawnRate = GetBaseRespawnRate() + GetRespawnRatePerCps() * cps;
 
-        // Only try to spawn if we are under target (keeps it stable and tunable)
-        if (alive.Count < target && alive.Count < config.maxGrassPatches)
+        if (alive.Count < target && alive.Count < maxPatches)
         {
             spawnBudget += respawnRate * Time.deltaTime;
 
-            // Convert accumulated budget into discrete spawns
             int toSpawn = Mathf.FloorToInt(spawnBudget);
             if (toSpawn > 0)
             {
                 spawnBudget -= toSpawn;
+
                 for (int i = 0; i < toSpawn; i++)
                 {
-                    if (alive.Count >= target || alive.Count >= config.maxGrassPatches)
+                    if (alive.Count >= target || alive.Count >= maxPatches)
                         break;
                     if (!TrySpawnOne())
-                        break; // if we can't find valid positions, stop this frame
+                        break;
                 }
             }
         }
         else
         {
-            // If at/above target, slowly bleed budget to avoid huge burst later
             spawnBudget = Mathf.Max(0f, spawnBudget - Time.deltaTime);
         }
     }
 
     private void TrimCuts(float now)
     {
-        float cutoff = now - config.pressureWindowSeconds;
+        float window = GetPressureWindowSeconds();
+        float cutoff = now - window;
+
         while (cutTimestamps.Count > 0 && cutTimestamps.Peek() < cutoff)
             cutTimestamps.Dequeue();
     }
 
     private float GetCutsPerSecond(float now)
     {
-        // count cuts in last window / window length
-        if (config.pressureWindowSeconds <= 0.0001f)
+        float window = GetPressureWindowSeconds();
+        if (window <= 0.0001f)
             return 0f;
-        return cutTimestamps.Count / config.pressureWindowSeconds;
+        return cutTimestamps.Count / window;
     }
 
     private bool TrySpawnOne()
@@ -126,13 +136,16 @@ public class GrassSpawner : MonoBehaviour
         if (!TryGetSpawnPosition(out Vector3 pos))
             return false;
 
-        GrassPatch patch = (pool.Count > 0) ? pool.Dequeue() : Instantiate(grassPrefab, spawnedParent ? spawnedParent : transform);
+        GrassPatch patch = (pool.Count > 0)
+            ? pool.Dequeue()
+            : Instantiate(grassPrefab, spawnedParent ? spawnedParent : transform);
+
         patch.transform.position = pos;
 
-        patch.Cut -= OnGrassPatchCut; // safety (in case it was pooled with a leftover)
+        patch.Cut -= OnGrassPatchCut;
         patch.Cut += OnGrassPatchCut;
 
-        patch.Initialize(config.startingGrassHP);
+        patch.Initialize(GetStartingGrassHP());
 
         alive.Add(patch);
         return true;
@@ -144,6 +157,7 @@ public class GrassSpawner : MonoBehaviour
         Despawn(patch);
         alive.Remove(patch);
     }
+    public void SetConfig(GrassGameConfig cfg) => config = cfg;
 
     private void Despawn(GrassPatch patch)
     {
@@ -158,19 +172,17 @@ public class GrassSpawner : MonoBehaviour
     {
         Bounds b = config.GetFieldBounds();
 
-        // We'll do a simple overlap check with a sphere radius
-        float r = Mathf.Max(0f, config.spawnAvoidRadius);
+        float r = Mathf.Max(0f, config.SpawnAvoidRadius);
 
-        for (int attempt = 0; attempt < config.spawnAttemptsPerPatch; attempt++)
+        for (int attempt = 0; attempt < config.SpawnAttemptsPerPatch; attempt++)
         {
             float x = Random.Range(b.min.x, b.max.x);
             float z = Random.Range(b.min.z, b.max.z);
-            pos = new Vector3(x, config.spawnY, z);
+            pos = new Vector3(x, config.SpawnY, z);
 
             if (r <= 0f)
                 return true;
 
-            // Check if something already occupies the spawn area (grass layer only)
             Collider[] hits = Physics.OverlapSphere(pos, r, grassLayerMask, QueryTriggerInteraction.Ignore);
             if (hits == null || hits.Length == 0)
                 return true;
@@ -180,11 +192,18 @@ public class GrassSpawner : MonoBehaviour
         return false;
     }
 
-    private void OnDrawGizmosSelected()
-    {
-        if (!config)
-            return;
-        Bounds b = config.GetFieldBounds();
-        Gizmos.DrawWireCube(b.center, new Vector3(b.size.x, 0.01f, b.size.z));
-    }
+    // ---- Stat helpers (via GameData) ----
+    private float GS(StatType t) => GameData.Instance.GetStat(t);
+
+    private int GetStartingGrassPatchCount() => Mathf.Max(0, Mathf.RoundToInt(GS(statStartingGrassPatchCount)));
+    private int GetMaxGrassPatches() => Mathf.Max(0, Mathf.RoundToInt(GS(statMaxGrassPatches)));
+    private float GetStartingGrassHP() => Mathf.Max(0.01f, GS(statStartingGrassHP));
+
+    private float GetBaseRespawnRate() => Mathf.Max(0f, GS(statBaseRespawnRatePerSecond));
+    private float GetRespawnRatePerCps() => Mathf.Max(0f, GS(statRespawnRatePerCutPerSecond));
+
+    private float GetBaseTargetPopulation() => Mathf.Max(0f, GS(statBaseTargetPopulation));
+    private float GetTargetPopPerCps() => Mathf.Max(0f, GS(statTargetPopulationPerCutPerSecond));
+
+    private float GetPressureWindowSeconds() => Mathf.Max(0.1f, GS(statPressureWindowSeconds));
 }

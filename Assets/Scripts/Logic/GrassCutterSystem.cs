@@ -1,9 +1,11 @@
-using UnityEngine;
-using VInspector.Libs;
 using System;
+using HolenderGames.StatSystem;
+using UnityEngine;
+
 public class GrassCutterSystem : MonoBehaviour
 {
     public event Action SnipTick;
+
     [SerializeField] private int overlapBufferSize = 256;
 
     private GrassGameConfig config;
@@ -46,22 +48,25 @@ public class GrassCutterSystem : MonoBehaviour
             return;
         if (session.State != GameSessionController.SessionState.Running)
             return;
+        if (GameData.Instance == null)
+            return;
 
         float now = Time.time;
         if (now < nextTickTime)
             return;
 
+        float tickInterval = Mathf.Max(0.01f, GameData.Instance.GetStat(config.BreakerTickIntervalStat));
+        nextTickTime = now + tickInterval;
 
-        nextTickTime = now + config.breakerTickInterval;
         DoSnipTick();
-
     }
 
     private void DoSnipTick()
     {
-        SnipTick?.Invoke();
+        SnipTick?.Invoke(); // pulse UI every tick (move below if you only want pulse-on-hit)
+
         Vector3 center = breaker.BreakerWorldPos;
-        float radius = config.breakerRadius;
+        float radius = breaker.Radius; // already stat-driven in your updated BreakerController
 
         int hitCount = Physics.OverlapSphereNonAlloc(
             center,
@@ -74,9 +79,9 @@ public class GrassCutterSystem : MonoBehaviour
         if (hitCount <= 0)
             return;
 
-        float baseDmg = config.breakerDamage;
-        float critChance = config.breakerCritChance;
-        float critMult = config.breakerCritBonusMultiplier;
+        float baseDmg = Mathf.Max(0f, GameData.Instance.GetStat(config.BreakerDamageStat));
+        float critChance = Mathf.Clamp01(GameData.Instance.GetStat(config.BreakerCritChanceStat));
+        float critMult = Mathf.Max(1f, GameData.Instance.GetStat(config.BreakerCritBonusMultiplierStat));
 
         for (int i = 0; i < hitCount; i++)
         {
@@ -84,10 +89,7 @@ public class GrassCutterSystem : MonoBehaviour
             if (!c)
                 continue;
 
-            // GrassPatch can be on same GO or parent (depending on prefab setup)
-            GrassPatch patch = c.GetComponent<GrassPatch>();
-            if (!patch)
-                patch = c.GetComponentInParent<GrassPatch>();
+            GrassPatch patch = c.GetComponent<GrassPatch>() ?? c.GetComponentInParent<GrassPatch>();
             if (!patch)
                 continue;
 
